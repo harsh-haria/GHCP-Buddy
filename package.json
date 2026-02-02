@@ -1,55 +1,41 @@
 {
-  "name": "ghcp-buddy",
-  "displayName": "GHCP Buddy",
-  "description": "Helps you automate flows inside of your GHCP chat",
+  "name": "dynamic-preprocessor",
+  "displayName": "Dynamic Pre-Processor Agent",
+  "description": "Intercepts prompts, transforms them using a fast model (optional), and executes them on the main model.",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.107.0"
+    "vscode": "^1.90.0"
   },
   "categories": [
-    "Other"
+    "AI",
+    "Chat"
   ],
   "activationEvents": [],
-  "extensionDependencies": [
-    "github.copilot-chat"
-  ],
   "main": "./extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "ghcp-buddy.helloWorld",
-        "title": "Hello World"
-      }
-    ],
     "chatParticipants": [
       {
-        "id": "vscode-preprocessor-chat",
-        "name": "preproc",
-        "description": "GHCP Buddy Pre-processor"
+        "id": "chat.preProcessor",
+        "name": "preProcessor",
+        "fullName": "Pre-Processor Agent",
+        "description": "Pre-processes prompts before sending to the main model.",
+        "isSticky": true
       }
     ],
     "configuration": {
-      "title": "GHCP Buddy Pre-processor",
+      "title": "Pre-Processor Agent",
       "properties": {
-        "ghcpBuddy.enterPreprocessorPrompt": {
+        "preProcessor.instructions": {
           "type": "string",
-          "editPresentation": "multilineText",
-          "default": ""
+          "default": "",
+          "description": "Instructions for the pre-processor. Leave empty to skip pre-processing."
+        },
+        "preProcessor.fastModelFamily": {
+          "type": "string",
+          "default": "gpt-4o-mini",
+          "description": "The family of the fast model to use for pre-processing."
         }
       }
     }
-  },
-  "scripts": {
-    "lint": "eslint .",
-    "pretest": "npm run lint",
-    "test": "vscode-test"
-  },
-  "devDependencies": {
-    "@types/mocha": "^10.0.10",
-    "@types/node": "22.x",
-    "@types/vscode": "^1.107.0",
-    "@vscode/test-cli": "^0.0.12",
-    "@vscode/test-electron": "^2.5.2",
-    "eslint": "^9.39.1"
   }
 }
