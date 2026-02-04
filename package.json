@@ -1,6 +1,6 @@
 {
   "name": "dynamic-preprocessor",
-  "displayName": "Dynamic Pre-Processor Agent",
+  "displayName": "GHCP Buddy",
   "description": "Intercepts prompts, transforms them using a fast model (optional), and executes them on the main model.",
   "publisher": "HarshHaria",
   "version": "0.0.1",
