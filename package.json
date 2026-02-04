@@ -2,14 +2,20 @@
   "name": "dynamic-preprocessor",
   "displayName": "Dynamic Pre-Processor Agent",
   "description": "Intercepts prompts, transforms them using a fast model (optional), and executes them on the main model.",
+  "publisher": "HarshHaria",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.90.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/harsh-haria/GHCP-Buddy.git"
   },
   "categories": [
     "AI",
     "Chat"
   ],
+  "icon": "logo.ico",
   "activationEvents": [],
   "main": "./extension.js",
   "contributes": {

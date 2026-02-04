@@ -1,65 +1,65 @@
-# ghcp-buddy README
+# Dynamic Pre-Processor for GitHub Copilot
 
-This is the README for your extension "ghcp-buddy". After writing up a brief description, we recommend including the following sections.
+**A "Middleware" Agent for VS Code Chat.**
+This extension intercepts your chat prompts, uses a fast, lightweight AI model to pre-process them (formatting, sanitization, or planning), and then forwards the optimized result to your main reasoning model (like Gemini 2.5 Pro, GPT-4, etc.) for the final answer.
 
-## Features
+![Icon](logo.ico)
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+## 🚀 Why use this?
 
-For example if there is an image subfolder under your extension project workspace:
+Standard Copilot is great, but sometimes you need to **transform data** before asking a question.
+* *Example:* "Convert this JSON to TOON format before analyzing."
+* *Example:* "Anonymize sensitive IDs in this log file before fixing the bug."
+* *Example:* "Summarize this massive file into a plan, then ask the main model to implement it."
 
-\!\[feature X\]\(images/feature-x.png\)
+Instead of doing this manually in two steps, this extension automates the chain:
+`User Input` -> **Mini Model (Pre-Processor)** -> **Main/Selected Model** -> `Final Answer`
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+## ✨ Key Features
 
-## Requirements
+* **⚡ Dual-Engine Architecture:** Uses a cheap/fast model (e.g., `gpt-5-mini`) for text manipulation and a heavy model (e.g., `Claude Sonnet 4.5`) for deep reasoning.
+* **🧠 Smart Context Logic:**
+    * **Auto-Magic Context:** If you don't select any code, it automatically reads your active editor tab.
+    * **Dual-Budgeting:** Sends a concise "summary" context to the Mini model (to prevent crashes) but the **Full-Fidelity** file content to the Main model.
+* **🛡️ Safety First:** Dynamic limit detection ensures you never hit "Context Window Exceeded" errors, regardless of which model you select.
+* **⚙️ Fully Configurable:** You define exactly what the Pre-processor should do via settings.
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+## ⚙️ Configuration
 
-## Extension Settings
+Go to **Settings** (`Ctrl+,`) and search for `Pre Processor`.
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+| Setting | Default | Description |
+| :--- | :--- | :--- |
+| `preProcessor.instructions` | `""` (Empty) | **The logic.** E.g., *"Convert any JSON in the prompt to TOON format."* If left empty, the extension acts as a standard passthrough. |
+| `preProcessor.fastModelFamily` | `gpt-5-mini` | The model family to use for Step 1.
 
-For example:
+## 📖 Usage
 
-This extension contributes the following settings:
+1.  Open GitHub Copilot Chat.
+2.  Select your desired **Main/Selected Model** from the dropdown (e.g., Claude Sonnet 4.5).
+3.  Type `@preProcessor` followed by your query.
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+### Example Scenario: The "TOON" Converter
 
-## Known Issues
+1.  **Set Instructions:** In settings, set `preProcessor.instructions` to:
+    > "Check if there is any JSON in the user prompt. Convert that JSON into a TOON format. Do not answer the user question yet, just output the transformed prompt."
+2.  **The Prompt:**
+    ```text
+    @preProcessor fix the logic error in this request: { "id": 1, "active": false }
+    ```
+3.  **What Happens:**
+    * **Step 1 (Mini Model):** Sees the JSON. Converts it to TOON. Rewrites the prompt.
+    * **Step 2 (Main Model):** Receives: *"Fix the logic error in this request: [TOON Data]"* and the full context of your open file.
+    * **Result:** The Main Model answers your question using the cleaned data.
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+## 🏗️ Architecture
 
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+```mermaid
+graph LR
+    A[User Input] --> B{Instructions Set?};
+    B -- No --> C[Direct Pass-through];
+    B -- Yes --> D[Step 1: Mini Model];
+    D -- "Context (Limited)" --> E[Refine/Format Prompt];
+    E --> F[Step 2: Main Model];
+    C --> F;
+    F -- "Context (Full Fidelity)" --> G[Final Answer];
